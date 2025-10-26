@@ -15,12 +15,11 @@ def read_logs(log_file):
         print(f"{log_file} not found")
         return []
 
+
 # Show logs
 def show_logs(log_list):
     for log in log_list:
         print(log)
-
-
 
 
 # Count ERROR, WARNING, and INFO messages 
