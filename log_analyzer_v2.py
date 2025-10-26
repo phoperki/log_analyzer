@@ -187,4 +187,22 @@ def main():
         print(f"Log_analyzer broke. {e}")
 
 
-main()
+# main()
+
+# Create report instead of menu
+
+def report():
+    print("----- Log analyzer v.01 -----")
+    print("-------- made by pp -----")
+
+    log_file = "logs_w_ips.log" #input("What log file will we be working with today? \n")
+    log_list = read_logs(log_file)
+    
+    warning, error, info = count_log_levels(log_list)
+    ip_list = extract_ips(log_list)
+    
+    ip_counts = count_ips(ip_list)        
+    failed_login_attempts(log_list)
+
+
+report()
