@@ -49,7 +49,7 @@ def count_log_levels(log_list):
 def print_summary(warning_count, error_count, info_count):
     
     
-    print("-----Log Summary-----")
+    print("----- Log Summary -----")
     print(f"Number of Warning Logs: {warning_count}")
     print(f"Number of Error Logs: {error_count}")
     print(f"Number of Info Logs: {info_count}")
@@ -57,9 +57,12 @@ def print_summary(warning_count, error_count, info_count):
 
 def display_errors(log_list):
     try:
-        pass
+        error_list = [log for log in log_list if "ERROR" in log]
+        return error_list
     except:
         pass
+
+
 
 
 log_file = read_logs("system.log")
@@ -67,27 +70,34 @@ log_file = read_logs("system.log")
 def main():
     try:
         print("\n")
-        print("-----Log analyzer v.01-----")
-        print("--------made by pp-----")
+        print("----- Log analyzer v.01 -----")
+        print("-------- made by pp -----")
 
-        while True:
-            
+        while True:         
             
             log_file = "system.log" #input("What log file will we be working with today? \n")
             log_list = read_logs(log_file)
             warning, error, info = count_log_levels(log_list)
 
+
             print("\nMenu\n" \
             "1. Show Logs\n" \
             "2. Display Log Level Counts\n" \
-            "3. Quit\n")
+            "3. Display Error Logs \n" \
+            "4. Quit\n")
 
             x = int(input("What is your choice? "))
             if x == 1:
+                print("----- Logs -----")
                 show_logs(log_list)
             elif x == 2:
                 print_summary(warning, error, info)
-            elif x ==3:
+            elif x == 3:
+                error_list = display_errors(log_list)
+                print("----- Error Logs -----")
+                for log in error_list:
+                    print(log)
+            elif x == 4:
                 print("Good bye!")
                 break
 
