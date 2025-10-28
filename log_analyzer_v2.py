@@ -90,14 +90,13 @@ def count_ips(ip_list):
                 # If not in the ip_count dict then create an entry and make its count 1
                 ip_counts[ip] = 1
         
-        
         # Return ip_counts dictionary
         return ip_counts
     
     except Exception as e:
         print(f"An error has occured: {e}")
 
-
+# Collect failed loging attempts into a list
 def failed_login_attempts(log_list):
     try:
         user_pattern = r'user: (\w+)'
@@ -121,21 +120,59 @@ def failed_login_attempts(log_list):
 
         return failed_login_list
         
-
     except Exception as e:
         print(f"An error has occured {e}")
 
+# Parse timestamps
 def extract_timestamps(log_list):
     # Sample Timestamp from log: 2025-01-15 10:24:00
     time_pattern = r'^(\d{4})\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01]) ([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])'
     timestamps = []
 
-    
     for log in log_list:
         time_match = re.search(time_pattern, log)
         timestamps.append((time_match.group(0)))
     return timestamps
 
+
+def detect_brute_force(log_list, threshold=2):
+    # If failed login attemps >=3 for same IP return TRUE
+    failed_list = failed_login_attempts(log_list)
+    pair_counts = {}
+
+    for ip_tup in failed_list:
+        if ip_tup in pair_counts:
+            pair_counts[ip_tup] = pair_counts[ip_tup]+1
+        else:
+            pair_counts[ip_tup] = 1
+
+    brute_list = {}
+    for pair in pair_counts:
+        if pair_counts[pair] >= threshold:
+            brute_list[pair] = pair_counts[pair]
+
+    return brute_list
+    
+
+def compromised_account(log_list):
+    # If IP is on brute_list then has a succeed then mark compromised account
+    brute_list = detect_brute_force(log_list)
+
+
+    pass
+
+def generate_security_report(log_list):
+    """
+    Combine ALL your detection functions into one report:
+    - Brute force IPs (you have this!)
+    - Compromised accounts (NEW)
+    - Permission violations (NEW)
+    - Unusual hours (NEW)
+    - Privilege escalation (NEW)
+    
+    Assign severity: CRITICAL, HIGH, MEDIUM, LOW
+    """
+    pass
 
 def main():
     try:
@@ -202,31 +239,32 @@ def main():
 
 # Create report instead of menu
 def report():
-    print("----- Log analyzer v.01 -----")
-    print("-------- made by pp -----")
+    print("")
+    print("----- LOG ANALYZER v.02 -----")
+    print("-------- MADE BY pp -----")
     print("")
     log_file = "logs_w_ips.log" #input("What log file will we be working with today? \n")
     log_list = read_logs(log_file)
     
     warning, error, info = count_log_levels(log_list)
-    print("----- Log Summary -----")
+    print("----- LOG SUMMARY -----")
     print_summary(warning, error, info)
     print("")
     error_list = display_errors(log_list)
-    print("----- Error Logs -----")
+    print("----- ERROR LOGS -----")
     for log in error_list:
         print(log)
     print("")
 
     ip_list = extract_ips(log_list)
     ip_counts = count_ips(ip_list)
-    print("----- IP Counts -----")
+    print("----- IP COUNTS -----")
     for ip, count in ip_counts.items():
         print(f"IP: {ip} | Count: {count}")
     print("")
 
     failed_login_list = failed_login_attempts(log_list)
-    print("----- Failed Logon Attempts -----")
+    print("----- FAILED LOGIN SUMMARY -----")
     for x in range(len(failed_login_list)):
         ip = failed_login_list[x][0]
         user = failed_login_list[x][1]
@@ -234,6 +272,14 @@ def report():
     print("")
 
     timestamps = extract_timestamps(log_list)
-    
+
+    brute_dict = detect_brute_force(log_list)
+    if brute_dict:
+        print("----- BRUTE FORCE ATTACKS DETECTED -----")
+        for pair, count in brute_dict.items():
+            ip, username = pair  # Unpack the tuple
+            print(f"{ip} is brute forcing account '{username}' ({count} failed attempts)")
+    else:
+        print("----- NO BRUTE FORCE DETECTED -----")
 
 report()
