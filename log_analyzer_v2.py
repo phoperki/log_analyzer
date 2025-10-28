@@ -125,6 +125,17 @@ def failed_login_attempts(log_list):
     except Exception as e:
         print(f"An error has occured {e}")
 
+def extract_timestamps(log_list):
+    # Sample Timestamp from log: 2025-01-15 10:24:00
+    time_pattern = r'^(\d{4})\-(0?[1-9]|1[012])\-(0?[1-9]|[12][0-9]|3[01]) ([0-1][0-9]|[2][0-3]):([0-5][0-9]):([0-5][0-9])'
+    timestamps = []
+
+    
+    for log in log_list:
+        time_match = re.search(time_pattern, log)
+        timestamps.append((time_match.group(0)))
+    return timestamps
+
 
 def main():
     try:
@@ -190,19 +201,39 @@ def main():
 # main()
 
 # Create report instead of menu
-
 def report():
     print("----- Log analyzer v.01 -----")
     print("-------- made by pp -----")
-
+    print("")
     log_file = "logs_w_ips.log" #input("What log file will we be working with today? \n")
     log_list = read_logs(log_file)
     
     warning, error, info = count_log_levels(log_list)
-    ip_list = extract_ips(log_list)
-    
-    ip_counts = count_ips(ip_list)        
-    failed_login_attempts(log_list)
+    print("----- Log Summary -----")
+    print_summary(warning, error, info)
+    print("")
+    error_list = display_errors(log_list)
+    print("----- Error Logs -----")
+    for log in error_list:
+        print(log)
+    print("")
 
+    ip_list = extract_ips(log_list)
+    ip_counts = count_ips(ip_list)
+    print("----- IP Counts -----")
+    for ip, count in ip_counts.items():
+        print(f"IP: {ip} | Count: {count}")
+    print("")
+
+    failed_login_list = failed_login_attempts(log_list)
+    print("----- Failed Logon Attempts -----")
+    for x in range(len(failed_login_list)):
+        ip = failed_login_list[x][0]
+        user = failed_login_list[x][1]
+        print(f"{ip} - user : {user}")
+    print("")
+
+    timestamps = extract_timestamps(log_list)
+    
 
 report()
