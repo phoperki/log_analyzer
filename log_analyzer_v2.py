@@ -153,7 +153,7 @@ def detect_brute_force(log_list, threshold=2):
 
     return brute_list
     
-def successful_login_attempt(log_list):
+def successful_login(log_list):
     try:
         user_pattern = r'user: (\w+)'
         success_login_pattern = r'Login successful'
