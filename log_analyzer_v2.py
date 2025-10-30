@@ -153,10 +153,37 @@ def detect_brute_force(log_list, threshold=2):
 
     return brute_list
     
+def successful_login_attempt(log_list):
+    try:
+        user_pattern = r'user: (\w+)'
+        success_login_pattern = r'Login successful'
+        ip_pattern = r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+
+        successful_login_list = []
+
+        for log in log_list:
+            if success_login_pattern in log:
+                # Get username
+                user_match = re.search(user_pattern, log)
+                # Get ip
+                ip_match = re.search(ip_pattern, log)
+                if user_match and ip_match:
+                    username = user_match.group(1)
+                    ip = ip_match.group(1)
+
+                    # Append as a tuple to the list
+                    successful_login_list.append((ip, username))
+
+        return successful_login_list
+        
+    except Exception as e:
+        print(f"An error has occured {e}")
+
 
 def compromised_account(log_list):
     # If IP is on brute_list then has a succeed then mark compromised account
     brute_list = detect_brute_force(log_list)
+
 
 
     pass
